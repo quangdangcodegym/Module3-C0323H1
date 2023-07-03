@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en" style="font-size: 15px;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .container{
+            display: flex;
+            justify-content: center;
+        }
+        .frm-login{
+            padding: 20px;
+            width: 33.33%;
+            background-color: aquamarine;
+        }
+        .head-image{
+            display: flex;
+            justify-content: center;
+        }
+        .head-image img{
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+        }
+        .frm-login > h3{
+            border-bottom: 1px solid red;
+            display: inline;
+        }
+        .form-control{
+            display: block;
+            padding: 5px;
+            width: 100%;
+        }
+        .frm-button{
+            display: flex;
+            justify-content: space-between;
+        }
+        .frm-button button{
+            padding: 5px 20px;
+            border-radius: 5px;
+            border: none;
+        }
+        .mt-5{
+            margin-top: 5px;
+        }
+        .mb-5{
+            margin-bottom: 5px;
+        }
+        .frm-button-footer{
+            display: flex;
+            justify-content: space-between;
+        }
+        .btn{
+            padding: 5px 10px;
+            border-radius: 5px;
+            border: none;
+            color: white;
+        }
+        .btn-success{
+            background-color: blue;
+        }
+        .btn-danger{
+            background-color: red;
+        }
+    </style>
+</head>
+<body >
+   
+    <div class="container">
+        <div class="frm-login">
+            <div class="head-image">
+                <img src="ngoc-trinh1.jpg" alt="">
+            </div>
+            <h3>Login</h3>
+            <input type="text" placeholder="email..." class="form-control mt-5 mb-5" >
+            <input type="text" placeholder="password..." class="form-control mt-5 mb-5">
+            <div class="frm-button">
+                <button>Login</button>
+                <a href="">Forgot password</a>
+            </div>
+            <div class="frm-button-footer mt-5 mb-5">
+                <button class="btn btn-success">Facebook</button>
+                <button class="btn btn-danger">Google</button>
+                <button class="btn btn-success">Twitter</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
