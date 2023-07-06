@@ -1,4 +1,4 @@
-package com.codegym.translate;
+package com.codegym.translatejsp;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -31,9 +31,7 @@ public class TranslateServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        System.out.println("Chạy vào hàm doGEt");
 
-        System.out.println(req.getSession().getId());
         RequestDispatcher requestDispatcher = req.getRequestDispatcher("/translate.jsp");
         requestDispatcher.forward(req, resp);
     }
