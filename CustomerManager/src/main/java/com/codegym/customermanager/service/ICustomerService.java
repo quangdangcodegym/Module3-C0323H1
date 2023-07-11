@@ -4,7 +4,7 @@ import com.codegym.customermanager.model.Customer;
 
 import java.util.List;
 
-public interface CustomerService {
+public interface ICustomerService {
     List<Customer> findAll();
 
     void save(Customer customer);

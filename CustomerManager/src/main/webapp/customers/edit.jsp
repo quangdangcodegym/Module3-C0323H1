@@ -63,6 +63,16 @@
         </div>
       </div>
       <div class="row mb-3">
+        <label class="col-3" for="">Customer types: </label>
+        <div class="col-9">
+          <select name="customer-type">
+            <c:forEach items="${requestScope.customerTypes}" var="ct">
+              <option ${ customer.getCustomerType().getId() == ct.getId() ? 'selected' : '' } value="${ct.getId()}">${ct.getName()}</option>
+            </c:forEach>
+          </select>
+        </div>
+      </div>
+      <div class="row mb-3">
         <div class="col-9 offset-3">
           <button class="btn btn-primary">Save</button>
           <a href="/customers"><button type="button" class="btn btn-dark">Back</button></a>

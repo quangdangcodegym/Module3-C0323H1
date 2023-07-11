@@ -1,8 +1,11 @@
 package com.codegym.customermanager.controller;
 
 import com.codegym.customermanager.model.Customer;
-import com.codegym.customermanager.service.CustomerService;
-import com.codegym.customermanager.service.CustomerServiceImpl;
+import com.codegym.customermanager.model.CustomerType;
+import com.codegym.customermanager.service.CustomerTypeServiceMysql;
+import com.codegym.customermanager.service.ICustomerService;
+import com.codegym.customermanager.service.CustomerServiceMysql;
+import com.codegym.customermanager.service.ICustomerTypeService;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -15,10 +18,13 @@ import java.util.List;
 
 @WebServlet(name = "CustomerServlet", urlPatterns = "/customers")
 public class CustomerServlet extends HttpServlet {
-    private CustomerService customerService = new CustomerServiceImpl();
+    private ICustomerService customerService = new CustomerServiceMysql();
+    private ICustomerTypeService customerTypeService = new CustomerTypeServiceMysql();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+
         //localhost:8080/customers          // show list
         //localhost:8080/customers?action=create
         //localhost:8080/customers?action=edit&id=2
@@ -59,6 +65,9 @@ public class CustomerServlet extends HttpServlet {
         Customer customer = customerService.findById(idCustomer);
         req.setAttribute("customer", customer);
 
+        List<CustomerType> customerTypes = customerTypeService.findAll();
+
+        req.setAttribute("customerTypes", customerTypes);
         RequestDispatcher requestDispatcher = req.getRequestDispatcher("/customers/edit.jsp");
         requestDispatcher.forward(req, resp);
 
@@ -74,6 +83,9 @@ public class CustomerServlet extends HttpServlet {
     }
 
     private void showCreate(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        List<CustomerType> customerTypes = customerTypeService.findAll();
+
+        req.setAttribute("customerTypes", customerTypes);
         RequestDispatcher requestDispatcher = req.getRequestDispatcher("/customers/create.jsp");
         requestDispatcher.forward(req, resp);
     }
@@ -105,6 +117,10 @@ public class CustomerServlet extends HttpServlet {
         customer.setName(name);
         customer.setEmail(email);
 
+        int idCate = Integer.parseInt(req.getParameter("customer-type"));
+        CustomerType ct = customerTypeService.findById(idCate);
+
+        customer.setCustomerType(ct);
         customerService.update(id, customer);
         req.getSession().setAttribute("messageEdit", "Sửa thành công");
         resp.sendRedirect("/customers");            // Dùng respone để sendRedirect
@@ -119,8 +135,16 @@ public class CustomerServlet extends HttpServlet {
 
         int id = (int)(Math.random() * 10000);
         Customer customer = new Customer(id, name, email, address);
+
+        int idCate = Integer.parseInt(req.getParameter("customer-type"));
+        CustomerType ct = customerTypeService.findById(idCate);
+
+        customer.setCustomerType(ct);
         customerService.save(customer);
 
+        List<CustomerType> customerTypes = customerTypeService.findAll();
+
+        req.setAttribute("customerTypes", customerTypes);
         req.setAttribute("message", "Thêm thành công");
         RequestDispatcher requestDispatcher = req.getRequestDispatcher("/customers/create.jsp");
         requestDispatcher.forward(req, resp);
