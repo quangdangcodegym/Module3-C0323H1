@@ -30,6 +30,16 @@
       <%--                   <label>${requestScope.message}</label>--%>
       <%--               </div>--%>
       <%--           </c:if>--%>
+
+      <c:if test="${requestScope.errors != null}">
+        <div class="alert alert-danger">
+          <ul>
+            <c:forEach items="${requestScope.errors}" var="e">
+              <li>${e}</li>
+            </c:forEach>
+          </ul>
+        </div>
+      </c:if>
       <c:if test="${requestScope.message !=null}">
         <script>
           window.onload = ()=>{

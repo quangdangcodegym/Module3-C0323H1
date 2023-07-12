@@ -30,6 +30,16 @@
 <%--                   <label>${requestScope.message}</label>--%>
 <%--               </div>--%>
 <%--           </c:if>--%>
+
+            <c:if test="${requestScope.errors != null}">
+                <div class="alert alert-danger">
+                    <ul>
+                        <c:forEach items="${requestScope.errors}" var="e">
+                            <li>${e}</li>
+                        </c:forEach>
+                    </ul>
+                </div>
+            </c:if>
             <c:if test="${requestScope.message !=null}">
                 <script>
                    window.onload = ()=>{
@@ -47,19 +57,22 @@
             <div class="row mt-3 mb-3">
                 <label class="col-3" for="">Name: </label>
                 <div class="col-9">
-                    <input type="text" class="form-control" name = "name"/>
+                    <input type="text" class="form-control" name = "name" value="${requestScope.customer.getName()}"/>
                 </div>
             </div>
             <div class="row mb-3">
                 <label class="col-3" for="">Email: </label>
                 <div class="col-9">
-                    <input type="text" class="form-control" name="email"/>
+                    <input type="text" class="form-control" name="email" value="${requestScope.customer.getEmail()}"/>
                 </div>
+                <c:if test="${requestScope.errorEmail != null}">
+                    <label style="color: red">${requestScope.errorEmail}</label>
+                </c:if>
             </div>
             <div class="row mb-3">
                 <label class="col-3" for="">Address: </label>
                 <div class="col-9">
-                    <input type="text" class="form-control" name="address"/>
+                    <input type="text" class="form-control" name="address" value="${requestScope.customer.getAddress()}"/>
                 </div>
             </div>
             <div class="row mb-3">

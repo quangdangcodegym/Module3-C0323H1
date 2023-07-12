@@ -6,6 +6,7 @@ import com.codegym.customermanager.service.CustomerTypeServiceMysql;
 import com.codegym.customermanager.service.ICustomerService;
 import com.codegym.customermanager.service.CustomerServiceMysql;
 import com.codegym.customermanager.service.ICustomerTypeService;
+import com.codegym.customermanager.utils.ValidatesUtils;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet(name = "CustomerServlet", urlPatterns = "/customers")
@@ -106,47 +108,123 @@ public class CustomerServlet extends HttpServlet {
         }
     }
 
-    private void updateCustomer(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        int id = Integer.parseInt(req.getParameter("id"));
-        String name = req.getParameter("name");
-        String email = req.getParameter("email");
-        String address = req.getParameter("address");
+    private void updateCustomer(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+        Customer customer = new Customer();
+        List<String> errors = new ArrayList<>();
 
-        Customer customer = customerService.findById(id);
-        customer.setAddress(address);
-        customer.setName(name);
-        customer.setEmail(email);
 
-        int idCate = Integer.parseInt(req.getParameter("customer-type"));
-        CustomerType ct = customerTypeService.findById(idCate);
 
-        customer.setCustomerType(ct);
-        customerService.update(id, customer);
-        req.getSession().setAttribute("messageEdit", "Sửa thành công");
-        resp.sendRedirect("/customers");            // Dùng respone để sendRedirect
+
+        validateIdCustomer(req, customer, errors);
+
+        validateName(req, errors, customer);
+        validateEmail(req, errors, customer);
+        validateCustomerType(req, errors, customer);
+        validateAddress(req, errors, customer);
+
+
+        if (!errors.isEmpty()) {
+            req.setAttribute("errors", errors);
+            req.setAttribute("customer", customer);
+            List<CustomerType> customerTypes = customerTypeService.findAll();
+            req.setAttribute("customerTypes", customerTypes);
+            RequestDispatcher requestDispatcher = req.getRequestDispatcher("/customers/edit.jsp");
+            requestDispatcher.forward(req, resp);
+        }else{
+            customerService.update(customer.getId(), customer);
+            req.getSession().setAttribute("messageEdit", "Sửa thành công");
+            resp.sendRedirect("/customers");            // Dùng respone để sendRedirect
+        }
+
 
 
     }
 
+    private void validateIdCustomer(HttpServletRequest req, Customer customer, List<String> errors) {
+        try {
+            int id = Integer.parseInt(req.getParameter("id"));
+            if (customerService.findById(id)==null) {
+                errors.add("Mã khách hàng không hợp lệ");
+            }
+            customer.setId(id);
+        } catch (NumberFormatException numberFormatException) {
+            errors.add("Định dạng mã khách hàng không hợp lệ");
+        }
+
+    }
+
     private void saveCustomer(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String name = req.getParameter("name");
-        String email = req.getParameter("email");
-        String address = req.getParameter("address");
+        Customer customer = new Customer();
 
-        int id = (int)(Math.random() * 10000);
-        Customer customer = new Customer(id, name, email, address);
 
-        int idCate = Integer.parseInt(req.getParameter("customer-type"));
-        CustomerType ct = customerTypeService.findById(idCate);
+        List<String> errors = new ArrayList<>();
+        validateName(req, errors, customer);
+        validateEmail(req, errors, customer);
+        validateAddress(req, errors, customer);
 
-        customer.setCustomerType(ct);
-        customerService.save(customer);
+
+
+        validateCustomerType(req, errors, customer);
+
+
 
         List<CustomerType> customerTypes = customerTypeService.findAll();
-
         req.setAttribute("customerTypes", customerTypes);
-        req.setAttribute("message", "Thêm thành công");
+
+        if (!errors.isEmpty()) {
+            req.setAttribute("errors", errors);
+            req.setAttribute("customer", customer);
+        }else{
+            req.setAttribute("message", "Thêm thành công");
+            customerService.save(customer);
+        }
         RequestDispatcher requestDispatcher = req.getRequestDispatcher("/customers/create.jsp");
         requestDispatcher.forward(req, resp);
+    }
+
+    private void validateCustomerType(HttpServletRequest req, List<String> errors, Customer customer) {
+        CustomerType ct = null;
+        try {
+            // idCate có 2 trường hợp: "aaa" hoặc mã ko hợp lệ ko có trong DB 20000
+            int idCate = Integer.parseInt(req.getParameter("customer-type"));
+            ct = customerTypeService.findById(idCate);
+            if (ct == null) {
+                errors.add("Loại khách hàng không có trong csdl");
+            }
+        } catch (NumberFormatException numberFormatException) {
+            errors.add("Định dạng của loại khách hàng không hợp lệ");
+        }
+        customer.setCustomerType(ct);
+
+
+    }
+
+    private void validateAddress(HttpServletRequest req, List<String> errors, Customer customer) {
+        String address = req.getParameter("address");
+        if (!ValidatesUtils.isAddressValid(address)) {
+            errors.add("Địa chỉ không hợp lệ");
+        }
+        customer.setAddress(address);
+
+    }
+
+    private void validateEmail(HttpServletRequest req, List<String> errors, Customer customer) {
+        String email = req.getParameter("email");
+        if (!ValidatesUtils.isValidEmail(email)) {
+            errors.add("Email không hợp lệ");
+
+            // Có thể gửi từng field lỗi qua hoặc dùng map<fieldloi, tenloi>
+//            req.setAttribute("errorEmail", "Email không hợp lệ");
+        }
+        customer.setEmail(email);
+
+    }
+
+    private void validateName(HttpServletRequest req, List<String> errors, Customer customer) {
+        String name = req.getParameter("name");
+        if (!ValidatesUtils.isUserNameValid(name)) {
+            errors.add("Tên không hợp lệ, bắt đầu bằng chữ cái và phải có từ 8-20 kí tự");
+        }
+        customer.setName(name);
     }
 }
