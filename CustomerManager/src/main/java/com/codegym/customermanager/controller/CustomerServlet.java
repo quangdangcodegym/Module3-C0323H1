@@ -2,6 +2,7 @@ package com.codegym.customermanager.controller;
 
 import com.codegym.customermanager.model.Customer;
 import com.codegym.customermanager.model.CustomerType;
+import com.codegym.customermanager.model.Pageable;
 import com.codegym.customermanager.service.CustomerTypeServiceMysql;
 import com.codegym.customermanager.service.ICustomerService;
 import com.codegym.customermanager.service.CustomerServiceMysql;
@@ -76,12 +77,49 @@ public class CustomerServlet extends HttpServlet {
     }
 
     private void showList(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        List<Customer> customerList = customerService.findAll();
-        req.setAttribute("customers", customerList);
+        Pageable pageable = new Pageable();
+        readPageable(req, pageable);
 
+
+
+
+        List<Customer> customerList = customerService.findCustomers(pageable);
+
+
+        req.setAttribute("customers", customerList);
+        req.setAttribute("pageable", pageable);
+        List<CustomerType> customerTypes = customerTypeService.findAll();
+        req.setAttribute("customerTypes", customerTypes);
 
         RequestDispatcher requestDispatcher = req.getRequestDispatcher("/customers/list.jsp");
         requestDispatcher.forward(req, resp);
+    }
+
+    private void readPageable(HttpServletRequest req, Pageable pageable) {
+        String kw = "";
+        if (req.getParameter("kw") != null) {
+            kw = req.getParameter("kw");
+
+        }
+        pageable.setKw(kw);
+        int customerType = -1;
+        if (req.getParameter("customer-type") != null) {
+            customerType = Integer.parseInt(req.getParameter("customer-type"));
+
+        }
+        pageable.setCustomerType(customerType);
+        int page = 1;
+        if (req.getParameter("page") != null) {
+            page = Integer.parseInt(req.getParameter("page"));
+
+        }
+        pageable.setPage(page);
+        int limit = 5;
+        if (req.getParameter("limit") != null) {
+            limit = Integer.parseInt(req.getParameter("limit"));
+
+        }
+        pageable.setLimit(limit);
     }
 
     private void showCreate(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

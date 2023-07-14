@@ -28,7 +28,16 @@
 <div class="container">
   <div class="head-control d-flex justify-content-between mt-5">
     <a><button class="btn btn-primary">Create</button></a>
-    <a><button class="btn btn-dark">Back</button></a>
+    <form method="get">
+      <input type="text" placeholder="Enter search..." name="kw" value="${pageable.getKw()}">
+      <select name="customer-type">
+        <option value="-1">ALL</option>
+        <c:forEach items="${customerTypes}" var="c">
+          <option ${pageable.getCustomerType() == c.getId() ? 'selected' : ''}  value="${c.getId()}">${c.getName()}</option>
+        </c:forEach>
+      </select>
+      <button>Search</button>
+    </form>
   </div>
   <div class="content">
     <c:if test="${sessionScope.messageEdit !=null}">
@@ -65,9 +74,10 @@
     <table class="table table-striped">
       <thead>
       <tr>
-        <th>Firstname</th>
-        <th>Lastname</th>
+        <th>Name</th>
         <th>Email</th>
+        <th>Address</th>
+        <th>Type</th>
         <th>Action></th>
       </tr>
       </thead>
@@ -77,6 +87,7 @@
             <td>${c.getName()}</td>
             <td>${c.getEmail()}</td>
             <td>${c.getAddress()}</td>
+            <td>${c.getCustomerType().getName()}</td>
             <td>
               <a href="/customers?action=edit&id=${c.getId()}"><i class="fa-solid fa-pen-to-square"></i></a>
               <a href="javascript:void(0)" onclick="handleDeleteClick(${c.getId()}, '${c.getName()}')"><i class="fa-solid fa-trash"></i></a>
@@ -85,6 +96,22 @@
       </c:forEach>
       </tbody>
     </table>
+
+    <div class="d-flex justify-content-end">
+      <ul class="pagination">
+        <c:if test="${pageable.getPage() > 1}">
+          <li class="page-item"><a class="page-link" href="/customers?kw=${pageable.kw}&page=${pageable.page-1}&customer-type=${pageable.customerType}">Previous</a></li>
+        </c:if>
+
+
+        <c:forEach begin="1" end="${pageable.getTotal()}" var="i">
+            <li class="page-item ${pageable.page == i ? 'active' : ''}"><a class="page-link" href="/customers?kw=${pageable.kw}&page=${i}&customer-type=${pageable.customerType}">${i}</a></li>
+        </c:forEach>
+        <c:if test="${pageable.getPage() < pageable.getTotal()}">
+          <li class="page-item"><a class="page-link" href="/customers?kw=${pageable.kw}&page=${pageable.page+1}&customer-type=${pageable.customerType}">Next</a></li>
+        </c:if>
+      </ul>
+    </div>
   </div>
 </div>
   <script>
