@@ -77,6 +77,9 @@ public class CustomerServlet extends HttpServlet {
     }
 
     private void showList(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        System.out.println("PASS:");
+
+
         Pageable pageable = new Pageable();
         readPageable(req, pageable);
 

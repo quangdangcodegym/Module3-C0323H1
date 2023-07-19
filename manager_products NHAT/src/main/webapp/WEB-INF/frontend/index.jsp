@@ -718,7 +718,7 @@
                                                                     <img src="\frontend\assets\img\cart\span-new.png" alt="">
                                                                 </div>
                                                                 <div class="product_action">
-                                                                    <a href="#"> <i class="fa fa-shopping-cart"></i> Add to cart</a>
+                                                                    <a href="/cart?action=add&id=${p.id}"> <i class="fa fa-shopping-cart"></i> Add to cart</a>
                                                                 </div>
                                                             </div>
                                                             <div class="product_content">

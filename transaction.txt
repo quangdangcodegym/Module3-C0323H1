@@ -1,0 +1,18 @@
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spTestTransaction`()
+BEGIN
+    DECLARE `_rollback` BOOL DEFAULT 0;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET `_rollback` = 1;
+    START TRANSACTION; 
+	INSERT INTO `test` (`id`, `name`) VALUES ('17', 'Nhat');
+	INSERT INTO `test` (`id`, `name`) VALUES ('12', 'Hung');
+		
+    
+    IF `_rollback` THEN
+        ROLLBACK;
+    ELSE
+        COMMIT;
+    END IF;
+    
+END ;;
+DELIMITER ;
